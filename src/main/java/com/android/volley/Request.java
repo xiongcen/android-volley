@@ -29,6 +29,30 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * 一个网络请求抽象类，查看继承关系可以看到实现的多种非抽象子类
+ * (StringRequest、JsonRequest、ImageRequest等)对象，
+ * 将其加入到RequestQueue中来完成一次网络请求操作。
+ *
+ * Request类中包含了请求 url，请求请求方式，请求 Header，请求 Body，请求的优先级等信息。
+ *
+ * 必须重写的两个方法：
+ * // 在工作线程调用，将网络返回的原生字节内容，转换成合适的类型
+ * abstract protected Response<T> parseNetworkResponse(NetworkResponse response);
+ *
+ * // 解析成合适类型的内容传递给它们的监听回调
+ * abstract protected void deliverResponse(T response);
+ *
+ * 经常被重写的方法：
+ * // 构建用于 POST、PUT、PATCH 请求方式的Body内容
+ * public byte[] getBody()
+ *
+ * // 上面getBody()函数没有被重写情况下，此方法的返回值会
+ * // 将key、value分别编码后拼装起来转换为字节码作为Body内容
+ * protected Map<String, String> getParams()
+ *
+ * // 构建请求头
+ * public Map<String, String> getHeaders()
+ *
  * Base class for all network requests.
  *
  * @param <T> The type of parsed response this request expects.
@@ -41,6 +65,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
     private static final String DEFAULT_PARAMS_ENCODING = "UTF-8";
 
     /**
+     * 8种Http请求方式
      * Supported request methods.
      */
     public interface Method {

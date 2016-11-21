@@ -30,7 +30,10 @@ import com.android.volley.VolleyError;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-/**
+/** 封装了 ImageRequst 的方便使用的图片加载工具类。
+ * 1.可以设置自定义的ImageCache，可以是内存缓存，也可以是 Disk 缓存，将获取的图片缓存起来，重复利用，减少请求。
+ * 2.可以定义图片请求过程中显示的图片和请求失败后显示的图片。
+ * 3.相同请求（相同地址，相同大小）只发送一个，可以避免重复请求。
  * Helper that handles loading and caching images from remote URLs.
  *
  * The simple way to use this class is to call {@link ImageLoader#get(String, ImageListener)}

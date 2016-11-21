@@ -31,6 +31,8 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * 核心类，将request加入到RequestQueue来完成请求操作的。
+ * 该类维护了两个基于优先级的请求队列、一个正在进行中，尚未完成的请求集合、一个等待请求的集合。
  * A request dispatch queue with a thread pool of dispatchers.
  *
  * Calling {@link #add(Request)} will enqueue the given Request for dispatch,
@@ -45,10 +47,12 @@ public class RequestQueue {
         public void onRequestFinished(Request<T> request);
     }
 
-    /** Used for generating monotonically-increasing sequence numbers for requests. */
+    /** 为每一个request申请的独立的序列号
+     * Used for generating monotonically-increasing sequence numbers for requests. */
     private AtomicInteger mSequenceGenerator = new AtomicInteger();
 
     /**
+     * 一个等待请求的集合，如果一个请求正在被处理并且可以被缓存，后续的相同 url 的请求，将进入此等待队列。
      * Staging area for requests that already have a duplicate request in flight.
      *
      * <ul>
@@ -62,17 +66,20 @@ public class RequestQueue {
             new HashMap<String, Queue<Request<?>>>();
 
     /**
+     * 一个正在进行中，尚未完成的请求集合
      * The set of all requests currently being processed by this RequestQueue. A Request
      * will be in this set if it is waiting in any queue or currently being processed by
      * any dispatcher.
      */
     private final Set<Request<?>> mCurrentRequests = new HashSet<Request<?>>();
 
-    /** The cache triage queue. */
+    /** 基于优先级存储的缓存request集合
+     * The cache triage queue. */
     private final PriorityBlockingQueue<Request<?>> mCacheQueue =
         new PriorityBlockingQueue<Request<?>>();
 
-    /** The queue of requests that are actually going out to the network. */
+    /** 基于优先级存储的需要进行网络通信的request集合
+     * The queue of requests that are actually going out to the network. */
     private final PriorityBlockingQueue<Request<?>> mNetworkQueue =
         new PriorityBlockingQueue<Request<?>>();
 
@@ -113,7 +120,7 @@ public class RequestQueue {
         mDelivery = delivery;
     }
 
-    /**
+    /** 构造默认的Response分发类为ExecutorDelivery，并传递主线程Handler
      * Creates the worker pool. Processing will not begin until {@link #start()} is called.
      *
      * @param cache A Cache to use for persisting responses to disk
@@ -136,15 +143,18 @@ public class RequestQueue {
     }
 
     /**
+     * 启动队列
      * Starts the dispatchers in this queue.
      */
     public void start() {
         stop();  // Make sure any currently running dispatchers are stopped.
         // Create the cache dispatcher and start it.
+        // 开启一个缓存调度线程CacheDispatcher
         mCacheDispatcher = new CacheDispatcher(mCacheQueue, mNetworkQueue, mCache, mDelivery);
         mCacheDispatcher.start();
 
         // Create network dispatchers (and corresponding threads) up to the pool size.
+        // 开启N个网络调度线程NetworkDispatcher
         for (int i = 0; i < mDispatchers.length; i++) {
             NetworkDispatcher networkDispatcher = new NetworkDispatcher(mNetworkQueue, mNetwork,
                     mCache, mDelivery);

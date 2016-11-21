@@ -81,7 +81,7 @@ public class ImageRequest extends Request<Bitmap> {
         mScaleType = scaleType;
     }
 
-    /**
+    /** 可以设置图片的最大宽度和最大高度，并计算出合适尺寸返回。每次最多解析一张图片防止 OOM。
      * For API compatibility with the pre-ScaleType variant of the constructor. Equivalent to
      * the normal constructor with {@code ScaleType.CENTER_INSIDE}.
      */

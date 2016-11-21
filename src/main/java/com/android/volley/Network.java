@@ -16,7 +16,7 @@
 
 package com.android.volley;
 
-/**
+/** 网络接口，处理网络请求
  * An interface for performing requests.
  */
 public interface Network {

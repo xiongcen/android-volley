@@ -86,6 +86,7 @@ public class BasicNetwork implements Network {
     @Override
     public NetworkResponse performRequest(Request<?> request) throws VolleyError {
         long requestStart = SystemClock.elapsedRealtime();
+        // 为了重试添加循环，只要不返回或者不抛出异常则一直重试
         while (true) {
             HttpResponse httpResponse = null;
             byte[] responseContents = null;
@@ -94,12 +95,14 @@ public class BasicNetwork implements Network {
                 // Gather headers.
                 Map<String, String> headers = new HashMap<String, String>();
                 addCacheHeaders(headers, request.getCacheEntry());
+                // 利用mHttpStack执行网络请求
                 httpResponse = mHttpStack.performRequest(request, headers);
                 StatusLine statusLine = httpResponse.getStatusLine();
                 int statusCode = statusLine.getStatusCode();
 
                 responseHeaders = convertHeaders(httpResponse.getAllHeaders());
                 // Handle cache validation.
+                // 处理304响应
                 if (statusCode == HttpStatus.SC_NOT_MODIFIED) {
 
                     Entry entry = request.getCacheEntry();
@@ -120,6 +123,7 @@ public class BasicNetwork implements Network {
                 }
                 
                 // Handle moved resources
+                // 处理301、302响应
                 if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 	String newUrl = responseHeaders.get("Location");
                 	request.setRedirectUrl(newUrl);
@@ -135,6 +139,7 @@ public class BasicNetwork implements Network {
                 }
 
                 // if the request is slow, log it.
+                // 如果请求所耗时间>3s，认为是慢请求，打印
                 long requestLifetime = SystemClock.elapsedRealtime() - requestStart;
                 logSlowRequests(requestLifetime, request, responseContents, statusLine);
 

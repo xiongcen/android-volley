@@ -65,33 +65,42 @@ public interface Cache {
      * Data and metadata for an entry returned by the cache.
      */
     public static class Entry {
-        /** The data returned from cache. */
+        /** 请求返回的数据(Body实体)
+         * The data returned from cache. */
         public byte[] data;
 
-        /** ETag for cache coherency. */
+        /** Http响应首部中用于缓存新鲜度验证的 ETag
+         * ETag for cache coherency. */
         public String etag;
 
-        /** Date of this response as reported by the server. */
+        /** Http响应首部中的响应产生时间
+         * Date of this response as reported by the server. */
         public long serverDate;
 
-        /** The last modified date for the requested object. */
+        /** 缓存内容最后一次修改的时间
+         * The last modified date for the requested object. */
         public long lastModified;
 
-        /** TTL for this record. */
+        /** 缓存的过期时间
+         * TTL for this record. */
         public long ttl;
 
-        /** Soft TTL for this record. */
+        /** 缓存的新鲜时间
+         * Soft TTL for this record. */
         public long softTtl;
 
-        /** Immutable response headers as received from server; must be non-null. */
+        /** 响应的Headers
+         * Immutable response headers as received from server; must be non-null. */
         public Map<String, String> responseHeaders = Collections.emptyMap();
 
-        /** True if the entry is expired. */
+        /** 判断缓存是否过期，过期缓存不能继续使用
+         * True if the entry is expired. */
         public boolean isExpired() {
             return this.ttl < System.currentTimeMillis();
         }
 
-        /** True if a refresh is needed from the original data source. */
+        /** 判断缓存是否新鲜，不新鲜的缓存需要发到服务端做新鲜度的检测
+         * True if a refresh is needed from the original data source. */
         public boolean refreshNeeded() {
             return this.softTtl < System.currentTimeMillis();
         }

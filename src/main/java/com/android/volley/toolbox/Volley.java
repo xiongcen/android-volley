@@ -27,6 +27,13 @@ import com.android.volley.RequestQueue;
 
 import java.io.File;
 
+/**
+ * 工具类，构建一个可用于添加网络请求的RequestQueue对象
+ * --------可扩展性--------
+ * 我们可以抛开 Volley 工具类构建自定义的 RequestQueue，
+ * 采用自定义的HttpStatck，采用自定义的Network实现，
+ * 采用自定义的 Cache 实现等来构建RequestQueue。
+ */
 public class Volley {
 
     /** Default on-disk cache directory. */
@@ -44,6 +51,7 @@ public class Volley {
     public static RequestQueue newRequestQueue(Context context, HttpStack stack, int maxDiskCacheBytes) {
         File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
 
+        // 可自定义User-Agent，在自定义Request中重写getHeaders()函数
         String userAgent = "volley/0";
         try {
             String packageName = context.getPackageName();
@@ -52,6 +60,7 @@ public class Volley {
         } catch (NameNotFoundException e) {
         }
 
+        // API Level>= 9，采用基于HttpURLConnection的HurlStack，如果<9，采用基于HttpClient的HttpClientStack
         if (stack == null) {
             if (Build.VERSION.SDK_INT >= 9) {
                 stack = new HurlStack();
@@ -62,8 +71,10 @@ public class Volley {
             }
         }
 
+        // 通过stack构造一个代表网络(Network)的具体实现BasicNetwork
         Network network = new BasicNetwork(stack);
-        
+
+        // 构造一个代表缓存(Cache)的基于Disk的具体实现DiskBasedCache
         RequestQueue queue;
         if (maxDiskCacheBytes <= -1)
         {
@@ -76,6 +87,7 @@ public class Volley {
         	queue = new RequestQueue(new DiskBasedCache(cacheDir, maxDiskCacheBytes), network);
         }
 
+        // 将网络(Network)对象和缓存(Cache)对象传入构建一个RequestQueue，启动这个RequestQueue
         queue.start();
 
         return queue;

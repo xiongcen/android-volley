@@ -16,20 +16,24 @@
 
 package com.android.volley;
 
-/**
+/** Volley 默认的重试策略实现类
  * Default retry policy for requests.
  */
 public class DefaultRetryPolicy implements RetryPolicy {
-    /** The current timeout in milliseconds. */
+    /** 当前重试的 timeout 时间，会以mBackoffMultiplier作为因子累计前几次重试的 timeout。
+     * The current timeout in milliseconds. */
     private int mCurrentTimeoutMs;
 
-    /** The current retry count. */
+    /** 已经重试次数
+     * The current retry count. */
     private int mCurrentRetryCount;
 
-    /** The maximum number of attempts. */
+    /** 最大重试次数
+     * The maximum number of attempts. */
     private final int mMaxNumRetries;
 
-    /** The backoff multiplier for the policy. */
+    /** 每次重试之前的 timeout 该乘以的因子。
+     * The backoff multiplier for the policy. */
     private final float mBackoffMultiplier;
 
     /** The default socket timeout in milliseconds */
@@ -84,7 +88,7 @@ public class DefaultRetryPolicy implements RetryPolicy {
         return mBackoffMultiplier;
     }
 
-    /**
+    /** 判断重试次数是否达到上限确定是否继续重试，抛出异常表示不再重试
      * Prepares for the next retry by applying a backoff to the timeout.
      * @param error The error code of the last attempt.
      */

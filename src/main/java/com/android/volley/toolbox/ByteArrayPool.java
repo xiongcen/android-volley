@@ -22,7 +22,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
+/** byte[] 的回收池，用于 byte[] 的回收再利用，减少了内存的分配和回收。
  * ByteArrayPool is a source and repository of <code>byte[]</code> objects. Its purpose is to
  * supply those buffers to consumers who need to use them for a short period of time and then
  * dispose of them. Simply creating and disposing such buffers in the conventional manner can
@@ -53,7 +53,9 @@ import java.util.List;
  */
 public class ByteArrayPool {
     /** The buffer pool, arranged both by last use and by buffer size */
+    // 按时间先后排序的byte[]集合，用于缓存满时清理元素
     private List<byte[]> mBuffersByLastUse = new LinkedList<byte[]>();
+    // 按从小到大排序的byte[]集合，用于快速获取长度大于传入参数len的 byte[]
     private List<byte[]> mBuffersBySize = new ArrayList<byte[]>(64);
 
     /** The total size of the buffers in the pool */
@@ -80,7 +82,8 @@ public class ByteArrayPool {
         mSizeLimit = sizeLimit;
     }
 
-    /**
+    /** 获取长度不小于 len 的 byte[]，遍历缓存，找出第一个长度大于传入参数len的 byte[]，并返回；
+     * 如果最终没有合适的 byte[]，new 一个返回。
      * Returns a buffer from the pool if one is available in the requested size, or allocates a new
      * one if a pooled one is not available.
      *
@@ -101,7 +104,7 @@ public class ByteArrayPool {
         return new byte[len];
     }
 
-    /**
+    /** 将用过的 byte[] 回收，根据 byte[] 长度按照从小到大的排序将 byte[] 插入到缓存mBuffersBySize合适位置。
      * Returns a buffer to the pool, throwing away old buffers if the pool would exceed its allotted
      * size.
      *
@@ -121,7 +124,7 @@ public class ByteArrayPool {
         trim();
     }
 
-    /**
+    /** size超过限制移除mBuffersByLastUse中第一个byte[]
      * Removes buffers from the pool until it is under its size limit.
      */
     private synchronized void trim() {

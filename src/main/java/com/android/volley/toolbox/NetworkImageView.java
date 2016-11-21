@@ -25,7 +25,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 
-/**
+/** 利用 ImageLoader，可以加载网络图片的 ImageView。
+ * 如果有新的图片加载请求，会把这个 ImageView 上旧的加载请求取消。
  * Handles fetching an image from a URL as well as the life-cycle of the
  * associated request.
  */

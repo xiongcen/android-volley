@@ -58,19 +58,24 @@ public class NetworkResponse implements Serializable{
         this(HttpStatus.SC_OK, data, headers, false, 0);
     }
 
-    /** The HTTP status code. */
+    /** HTTP响应状态码
+     * The HTTP status code. */
     public final int statusCode;
 
-    /** Raw data from this response. */
+    /** Body数据
+     * Raw data from this response. */
     public final byte[] data;
 
-    /** Response headers. */
+    /** 响应headers
+     * Response headers. */
     public final Map<String, String> headers;
 
-    /** True if the server returned a 304 (Not Modified). */
+    /** 标识是否为304响应
+     * True if the server returned a 304 (Not Modified). */
     public final boolean notModified;
 
-    /** Network roundtrip time in milliseconds. */
+    /** 请求所耗时间
+     * Network roundtrip time in milliseconds. */
     public final long networkTimeMs;
 }
 

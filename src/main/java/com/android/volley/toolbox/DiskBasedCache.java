@@ -47,22 +47,27 @@ public class DiskBasedCache implements Cache {
     private final Map<String, CacheHeader> mEntries =
             new LinkedHashMap<String, CacheHeader>(16, .75f, true);
 
-    /** Total amount of space currently used by the cache in bytes. */
+    /** 目前使用的缓存字节数
+     * Total amount of space currently used by the cache in bytes. */
     private long mTotalSize = 0;
 
-    /** The root directory to use for the cache. */
+    /** 硬盘缓存目录
+     * The root directory to use for the cache. */
     private final File mRootDirectory;
 
-    /** The maximum size of the cache in bytes. */
+    /** 硬盘缓存最大容量
+     * The maximum size of the cache in bytes. */
     private final int mMaxCacheSizeInBytes;
 
-    /** Default maximum disk usage in bytes. */
+    /** 默认硬盘最大的缓存空间(5M)
+     * Default maximum disk usage in bytes. */
     private static final int DEFAULT_DISK_USAGE_BYTES = 5 * 1024 * 1024;
 
     /** High water mark percentage for the cache */
     private static final float HYSTERESIS_FACTOR = 0.9f;
 
-    /** Magic number for current version of cache file format. */
+    /** 标记缓存起始的MAGIC_NUMBER.
+     * Magic number for current version of cache file format. */
     private static final int CACHE_MAGIC = 0x20150306;
 
     /**
@@ -84,7 +89,7 @@ public class DiskBasedCache implements Cache {
         this(rootDirectory, DEFAULT_DISK_USAGE_BYTES);
     }
 
-    /**
+    /** 清空缓存
      * Clears the cache. Deletes all cached files from disk.
      */
     @Override
@@ -100,7 +105,7 @@ public class DiskBasedCache implements Cache {
         VolleyLog.d("Cache cleared.");
     }
 
-    /**
+    /** 从缓存中得到数据。先从文件中得到摘要信息，然后读取缓存数据文件得到内容。
      * Returns the cache entry with the specified key if it exists, null otherwise.
      */
     @Override
@@ -137,7 +142,7 @@ public class DiskBasedCache implements Cache {
         }
     }
 
-    /**
+    /** 初始化，遍历Disk缓存系统,将缓存文件中的CacheHeader和key存储到Map对象(内存)中
      * Initializes the DiskBasedCache by scanning for all files currently in the
      * specified root directory. Creates the root directory if necessary.
      */
@@ -193,7 +198,7 @@ public class DiskBasedCache implements Cache {
 
     }
 
-    /**
+    /** 将数据存入缓存内。先检查缓存是否会满，会则先删除缓存中部分数据，然后再新建缓存文件。
      * Puts the entry with the specified key into the cache.
      */
     @Override
@@ -221,7 +226,7 @@ public class DiskBasedCache implements Cache {
         }
     }
 
-    /**
+    /** 删除缓存中某个元素。
      * Removes the specified key from the cache if it exists.
      */
     @Override
@@ -254,8 +259,9 @@ public class DiskBasedCache implements Cache {
     }
 
     /**
+     * 删除硬盘缓存中的一些内容以达到小于规定的mMaxCacheSizeInBytes
      * Prunes the cache to fit the amount of bytes specified.
-     * @param neededSpace The amount of bytes we are trying to fit into the cache.
+     * @param neededSpace The amount of bytes we are trying to fit into the cache. 尝试指定的字节数
      */
     private void pruneIfNeeded(int neededSpace) {
         if ((mTotalSize + neededSpace) < mMaxCacheSizeInBytes) {
@@ -336,7 +342,7 @@ public class DiskBasedCache implements Cache {
         return bytes;
     }
 
-    /**
+    /** 缓存文件摘要信息，存储在缓存文件的头部，
      * Handles holding onto the cache headers for an entry.
      */
     // Visible for testing.
