@@ -574,7 +574,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
         mResponseDelivered = true;
     }
 
-    /**
+    /** request是否已经被分发过
      * Returns true if this request has had a response delivered for it.
      */
     public boolean hasHadResponseDelivered() {

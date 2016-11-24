@@ -25,8 +25,7 @@ import org.apache.http.protocol.HTTP;
 
 import java.util.Map;
 
-/** Http header 的解析工具类，在 Volley 中主要作用是用于解析 Header 从而判断返回结果是否需要缓存，
- * 如果需要返回 Header 中相关信息。
+/** Http header 的解析工具类，在 Volley 中主要作用是用于解析 Header 从而判断返回结果是否需要缓存。
  * Utility methods for parsing HTTP headers.
  */
 public class HttpHeaderParser {
@@ -67,6 +66,7 @@ public class HttpHeaderParser {
             serverDate = parseDateAsEpoch(headerValue);
         }
 
+        // 获取响应提的Cache缓存策略
         headerValue = headers.get("Cache-Control");
         if (headerValue != null) {
             hasCacheControl = true;
@@ -77,45 +77,63 @@ public class HttpHeaderParser {
                 if (token.equals("no-cache") || token.equals("no-store")) {
                     return null;
                 } else if (token.startsWith("max-age=")) {
+                    // 获取缓存的有效时间，单位是秒
                     try {
                         maxAge = Long.parseLong(token.substring(8));
                     } catch (Exception e) {
                     }
                 } else if (token.startsWith("stale-while-revalidate=")) {
+                    // 是过了缓存时间后还可以继续使用缓存的时间，单位是秒
+                    // 所以真正的缓存时间是“max-age=” + “stale-while-revalidate=”的总时间
+                    // 但如果有“must-revalidate”或者“proxy-revalidate”字段则过了缓存时间缓存就立即请求服务器
                     try {
                         staleWhileRevalidate = Long.parseLong(token.substring(23));
                     } catch (Exception e) {
                     }
                 } else if (token.equals("must-revalidate") || token.equals("proxy-revalidate")) {
+                    // 过了缓存时间就立刻请求服务器
                     mustRevalidate = true;
                 }
             }
         }
 
+        // 缓存有效期的时间点，和Cache-Control意思一致，为兼容HTTP1.0和HTTP1.1才会使用该字段
+        // 如果有Cache-Control，优先使用Cache-Control
         headerValue = headers.get("Expires");
         if (headerValue != null) {
             serverExpires = parseDateAsEpoch(headerValue);
         }
 
+        // 服务器最后修改的时间
         headerValue = headers.get("Last-Modified");
         if (headerValue != null) {
             lastModified = parseDateAsEpoch(headerValue);
         }
 
-        // 根据 ETag 首部，获取响应实体标签
+        // 根据 ETag 首部，获取响应实体标签。
+        // 该字段是服务器资源的唯一标识符，与"Last-Modified"配合使用
+        // 因为"Last-Modified"只能精确到秒，如果"ETag"与服务器一致，再判断"Last-Modified"
+        // 防止一秒内服务器多次修改而导致数据不准确的问题
         serverEtag = headers.get("ETag");
 
         // Cache-Control takes precedence over an Expires header, even if both exist and Expires
         // is more restrictive.
         // 根据 Cache－Control 和 Expires 首部，计算出缓存的过期时间，和缓存的新鲜度时间
         if (hasCacheControl) {
+            // 最精确的缓存过期时间softExpire=现在的时间+缓存可使用的最大时间
             softExpire = now + maxAge * 1000;
+            // 最终缓存过期时间finalExpire，还要判断mustRevalidate参数
+            // 如果mustRevalidate=false
+            // 最终缓存过期时间finalExpire=最精确的缓存过期时间softExpire+缓存过期后还可以继续使用的时间
             finalExpire = mustRevalidate
                     ? softExpire
                     : softExpire + staleWhileRevalidate * 1000;
         } else if (serverDate > 0 && serverExpires >= serverDate) {
             // Default semantic for Expire header in HTTP specification is softExpire.
+            // 如果 响应生成时间点>0 && 缓存有效期的时间点>=响应生成时间点
+            // 最精确的缓存过期时间softExpire=现在的时间+(缓存有效期的时间点-响应生成时间点)
             softExpire = now + (serverExpires - serverDate);
+            // 最终缓存过期时间finalExpire=最精确的缓存过期时间softExpire
             finalExpire = softExpire;
         }
 
@@ -144,7 +162,7 @@ public class HttpHeaderParser {
         }
     }
 
-    /** 解析编码集，在 Content-Type 首部中获取编码集，如果没有找到，默认返回 ISO-8859-1
+    /** 解析编码集，在 Content-Type 首部中获取编码集，如果没有找到，返回defaultCharset
      * Retrieve a charset from headers
      *
      * @param headers An {@link java.util.Map} of headers
@@ -169,7 +187,7 @@ public class HttpHeaderParser {
         return defaultCharset;
     }
 
-    /**
+    /** 解析编码集，在 Content-Type 首部中获取编码集，如果没有找到，默认返回 ISO-8859-1
      * Returns the charset specified in the Content-Type of this header,
      * or the HTTP default (ISO-8859-1) if none can be found.
      */

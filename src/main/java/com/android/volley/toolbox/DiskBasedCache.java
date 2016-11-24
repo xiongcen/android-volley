@@ -70,7 +70,7 @@ public class DiskBasedCache implements Cache {
      * Magic number for current version of cache file format. */
     private static final int CACHE_MAGIC = 0x20150306;
 
-    /**
+    /** 指定硬盘缓存的目录，指定硬盘缓存的大小,默认为5M.
      * Constructs an instance of the DiskBasedCache at the specified directory.
      * @param rootDirectory The root directory of the cache.
      * @param maxCacheSizeInBytes The maximum size of the cache in bytes.
@@ -89,7 +89,7 @@ public class DiskBasedCache implements Cache {
         this(rootDirectory, DEFAULT_DISK_USAGE_BYTES);
     }
 
-    /** 清空缓存
+    /** 清空缓存文件和Map对象，缓存字节总数置0
      * Clears the cache. Deletes all cached files from disk.
      */
     @Override
@@ -105,17 +105,19 @@ public class DiskBasedCache implements Cache {
         VolleyLog.d("Cache cleared.");
     }
 
-    /** 从缓存中得到数据。先从文件中得到摘要信息，然后读取缓存数据文件得到内容。
+    /** 先从Map对象中根据key判断是否缓存过，若缓存过，从缓存文件中得到数据
      * Returns the cache entry with the specified key if it exists, null otherwise.
      */
     @Override
     public synchronized Entry get(String key) {
+        // 先从Map对象中获取数据，如果没有则直接返回
         CacheHeader entry = mEntries.get(key);
         // if the entry does not exist, return.
         if (entry == null) {
             return null;
         }
 
+        // 返回对应的缓存文件
         File file = getFileForKey(key);
         CountingInputStream cis = null;
         try {
@@ -149,12 +151,14 @@ public class DiskBasedCache implements Cache {
     @Override
     public synchronized void initialize() {
         if (!mRootDirectory.exists()) {
+            // 硬盘缓存目录不存在直接返回即可
             if (!mRootDirectory.mkdirs()) {
                 VolleyLog.e("Unable to create cache dir %s", mRootDirectory.getAbsolutePath());
             }
             return;
         }
 
+        // 获取硬盘缓存目录所有文件集合.每个HTTP请求结果对应一个文件.
         File[] files = mRootDirectory.listFiles();
         if (files == null) {
             return;
@@ -163,8 +167,11 @@ public class DiskBasedCache implements Cache {
             BufferedInputStream fis = null;
             try {
                 fis = new BufferedInputStream(new FileInputStream(file));
+                // 进行对象反序列化
                 CacheHeader entry = CacheHeader.readHeader(fis);
+                // 将文件的大小赋值给entry.size,单位字节
                 entry.size = file.length();
+                // 在内存中维护一张硬盘<key,value>映射表
                 putEntry(entry.key, entry);
             } catch (IOException e) {
                 if (file != null) {
@@ -198,16 +205,19 @@ public class DiskBasedCache implements Cache {
 
     }
 
-    /** 将数据存入缓存内。先检查缓存是否会满，会则先删除缓存中部分数据，然后再新建缓存文件。
+    /** 将数据存入缓存内。先检查缓存文件是否会满，会则先删除缓存中部分数据，然后再新建缓存文件。
      * Puts the entry with the specified key into the cache.
      */
     @Override
     public synchronized void put(String key, Entry entry) {
         pruneIfNeeded(entry.data.length);
+        // 根据hash值生成的文件名
         File file = getFileForKey(key);
         try {
             BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(file));
+            // 创建一个新的CacheHeader对象
             CacheHeader e = new CacheHeader(key, entry);
+            // 按照指定方式写头部信息，包括缓存过期时间，新鲜度等等
             boolean success = e.writeHeader(fos);
             if (!success) {
                 fos.close();
@@ -216,6 +226,7 @@ public class DiskBasedCache implements Cache {
             }
             fos.write(entry.data);
             fos.close();
+            // 保存到内存
             putEntry(key, e);
             return;
         } catch (IOException e) {
@@ -226,7 +237,7 @@ public class DiskBasedCache implements Cache {
         }
     }
 
-    /** 删除缓存中某个元素。
+    /** 根据key删除缓存文件。
      * Removes the specified key from the cache if it exists.
      */
     @Override
@@ -239,7 +250,8 @@ public class DiskBasedCache implements Cache {
         }
     }
 
-    /**
+    /** 因为hashcode并不唯一。把一个key分成两部分，目的是为了尽可能避免hashcode重复造成的文件名重复。
+     * 求两次hashcode与另一个url的hashcode重复的概率比求一次hashcode重复的概率小。
      * Creates a pseudo-unique filename for the specified cache key.
      * @param key The key to generate a file name for.
      * @return A pseudo-unique filename.
@@ -258,8 +270,7 @@ public class DiskBasedCache implements Cache {
         return new File(mRootDirectory, getFilenameForKey(key));
     }
 
-    /**
-     * 删除硬盘缓存中的一些内容以达到小于规定的mMaxCacheSizeInBytes
+    /** 缓存替换策略：删除硬盘缓存中的一些内容以达到小于规定的mMaxCacheSizeInBytes
      * Prunes the cache to fit the amount of bytes specified.
      * @param neededSpace The amount of bytes we are trying to fit into the cache. 尝试指定的字节数
      */
@@ -279,6 +290,7 @@ public class DiskBasedCache implements Cache {
         while (iterator.hasNext()) {
             Map.Entry<String, CacheHeader> entry = iterator.next();
             CacheHeader e = entry.getValue();
+            // 根据一定条件缓存
             boolean deleted = getFileForKey(e.key).delete();
             if (deleted) {
                 mTotalSize -= e.size;
@@ -289,6 +301,7 @@ public class DiskBasedCache implements Cache {
             iterator.remove();
             prunedFiles++;
 
+            // 当硬盘大小满足可以存放新的HTTP请求结果时,停止删除操作
             if ((mTotalSize + neededSpace) < mMaxCacheSizeInBytes * HYSTERESIS_FACTOR) {
                 break;
             }
@@ -300,7 +313,7 @@ public class DiskBasedCache implements Cache {
         }
     }
 
-    /**
+    /** 将key和CacheHeader存入到Map对象mEntries中，并更新当前占用的总字节数
      * Puts the entry with the specified key into the cache.
      * @param key The key to identify the entry by.
      * @param entry The entry to cache.
@@ -315,7 +328,7 @@ public class DiskBasedCache implements Cache {
         mEntries.put(key, entry);
     }
 
-    /**
+    /** 从Map对象中删除元素，缓存字节总数减去删除元素size
      * Removes the entry identified by 'key' from the cache.
      */
     private void removeEntry(String key) {

@@ -168,6 +168,7 @@ public class BasicNetwork implements Network {
                 } else {
                 	VolleyLog.e("Unexpected response code %d for %s", statusCode, request.getUrl());
                 }
+                // SystemClock.elapsedRealtime()表示真正流逝的时间，sleep的时间也算
                 if (responseContents != null) {
                     networkResponse = new NetworkResponse(statusCode, responseContents,
                             responseHeaders, false, SystemClock.elapsedRealtime() - requestStart);

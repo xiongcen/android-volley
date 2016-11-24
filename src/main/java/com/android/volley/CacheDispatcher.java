@@ -125,10 +125,12 @@ public class CacheDispatcher extends Thread {
 
                 // We have a cache hit; parse its data for delivery back to the request.
                 request.addMarker("cache-hit");
+                // request.parseNetworkResponse(...)会调用HttpHeaderParser.parseCacheHeaders(response)方法构建缓存实体response.cacheEntry
                 Response<?> response = request.parseNetworkResponse(
                         new NetworkResponse(entry.data, entry.responseHeaders));
                 request.addMarker("cache-hit-parsed");
 
+                // 此处若进行缓存新鲜度测试，并且新取到的数据与原数据有变化，会导致Listener的onResponse()回调两次
                 if (!entry.refreshNeeded()) {
                     // Completely unexpired cache hit. Just deliver the response.
                     mDelivery.postResponse(request, response);

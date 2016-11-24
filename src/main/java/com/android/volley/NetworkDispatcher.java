@@ -122,6 +122,7 @@ public class NetworkDispatcher extends Thread {
                 }
 
                 // Parse the response here on the worker thread.
+                // request.parseNetworkResponse(...)会调用HttpHeaderParser.parseCacheHeaders(response)方法构建缓存实体response.cacheEntry
                 Response<?> response = request.parseNetworkResponse(networkResponse);
                 request.addMarker("network-parse-complete");
 
