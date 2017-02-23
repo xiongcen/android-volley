@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.example.volley.cachetest.CacheTestActivity;
 import com.example.volley.fragment.ImageLoaderFragment;
 import com.example.volley.fragment.ImageRequestFragment;
 import com.example.volley.fragment.JsonRequestFragment;
@@ -33,7 +34,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 		// Json请求
 		findViewById(R.id.btn_json_request).setOnClickListener(this);
-		
+
 		// Image请求
 		findViewById(R.id.btn_image_request).setOnClickListener(this);
 
@@ -48,7 +49,11 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 		// post请求
 		findViewById(R.id.btn_post_request).setOnClickListener(this);
-		
+
+        findViewById(R.id.btn_cache_test).setOnClickListener(this);
+
+        findViewById(R.id.btn_socket_test).setOnClickListener(this);
+
 	}
 
 	@Override
@@ -94,10 +99,16 @@ public class HomeActivity extends Activity implements OnClickListener {
 		case R.id.btn_post_request:
 			intent.putExtra(Constants.Extra.FRAGMENT_INDEX, PostRequestFragment.INDEX);
 			break;
-		default:
+        case R.id.btn_socket_test:
+            startActivity(new Intent(HomeActivity.this, SocketActivity.class));
+            break;
+        case R.id.btn_cache_test:
+            startActivity(new Intent(HomeActivity.this, CacheTestActivity.class));
+            return;
+        default:
 			break;
 		}
-		
+
 		startActivity(intent);
 
 	}

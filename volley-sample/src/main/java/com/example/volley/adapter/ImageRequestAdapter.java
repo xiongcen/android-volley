@@ -34,7 +34,7 @@ public class ImageRequestAdapter extends ImageBaseAdapter {
 		imageView.setImageResource(R.drawable.ic_empty);
 		
 		//取消这个ImageView已有的请求
-		VolleyUtil.getQueue(context).cancelAll(imageView);
+		VolleyUtil.cancelAll(imageView);
 		
 		ImageRequest request=new ImageRequest(StringUtil.preUrl(imageUrl), new Listener<Bitmap>() {
 
@@ -52,7 +52,7 @@ public class ImageRequestAdapter extends ImageBaseAdapter {
 		
 		request.setTag(imageView);
 		
-		VolleyUtil.getQueue(this.context).add(request);
+		VolleyUtil.addRequest(request);
 		
 	}
 

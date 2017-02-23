@@ -99,14 +99,14 @@ public class XmlRequestFragment extends Fragment {
 		// 请求加上Tag,用于取消请求
 		request.setTag(this);
 
-		VolleyUtil.getQueue(getActivity()).add(request);
+		VolleyUtil.addRequest(request);
 
 		return view;
 	}
 
 	@Override
 	public void onDestroyView() {
-		VolleyUtil.getQueue(getActivity()).cancelAll(this);
+		VolleyUtil.cancelAll(this);
 		super.onDestroyView();
 	}
 

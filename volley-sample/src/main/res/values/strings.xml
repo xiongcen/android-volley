@@ -18,7 +18,9 @@
     
     <string name="post_request_text">post请求</string>
     <string name="post_request">post请求</string>
-    
+    <string name="cache_test">缓存测试</string>
+    <string name="socket_test">Socket测试</string>
+
     
 
     <string name="action_about">关于</string>

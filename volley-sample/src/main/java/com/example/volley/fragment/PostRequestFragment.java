@@ -60,7 +60,7 @@ public class PostRequestFragment extends Fragment {
 					return;
 				}
 				// 请求之前，先取消之前的请求（取消还没有进行完的请求）
-				VolleyUtil.getQueue(getActivity()).cancelAll(this);
+				VolleyUtil.cancelAll(this);
 
 				tvResult.setText("");
 
@@ -117,7 +117,7 @@ public class PostRequestFragment extends Fragment {
 				// 请求加上Tag,用于取消请求
 				request.setTag(this);
 
-				VolleyUtil.getQueue(getActivity()).add(request);
+				VolleyUtil.addRequest(request);
 
 			}
 		});
@@ -125,7 +125,7 @@ public class PostRequestFragment extends Fragment {
 
 	@Override
 	public void onDestroyView() {
-		VolleyUtil.getQueue(getActivity()).cancelAll(this);
+		VolleyUtil.cancelAll(this);
 		super.onDestroyView();
 	}
 

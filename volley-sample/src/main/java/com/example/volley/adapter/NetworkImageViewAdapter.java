@@ -16,7 +16,7 @@ public class NetworkImageViewAdapter extends ImageBaseAdapter{
 	
 	public NetworkImageViewAdapter(Context context, String[] imageUrlArray) {
 		super(context, imageUrlArray);
-		this.imageLoader=new ImageLoader(VolleyUtil.getQueue(context), new LruImageCache());
+		this.imageLoader=new ImageLoader(VolleyUtil.getRequestQueue(), new LruImageCache());
 	}
 
 	@Override

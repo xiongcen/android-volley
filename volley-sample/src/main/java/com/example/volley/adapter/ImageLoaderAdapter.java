@@ -18,7 +18,7 @@ public class ImageLoaderAdapter extends ImageBaseAdapter{
 
 	public ImageLoaderAdapter(Context context, String[] imageUrlArray) {
 		super(context, imageUrlArray);
-		this.imageLoader=new ImageLoader(VolleyUtil.getQueue(context), new LruImageCache());
+		this.imageLoader=new ImageLoader(VolleyUtil.getRequestQueue(), new LruImageCache());
 	}
 
 	@Override

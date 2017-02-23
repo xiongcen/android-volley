@@ -79,6 +79,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/post_request" />
+
+        <Button
+            android:id="@+id/btn_cache_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cache_test" />
+
+        <Button
+            android:id="@+id/btn_socket_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/socket_test" />
     </LinearLayout>
 
 </ScrollView>
