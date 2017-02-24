@@ -28,86 +28,86 @@ import com.example.volley.util.ToastUtil;
 import com.example.volley.util.VolleyUtil;
 
 public class XmlRequestFragment extends Fragment {
-	public static final int INDEX = 31;
+    public static final int INDEX = 31;
 
-	private ListView lvWeather;
-	private static final int[] ids = { R.id.tv_weather_city, R.id.tv_weather_detail, R.id.tv_weather_temp,
-			R.id.tv_weather_wind };
-	private static final String[] keys = { "city", "detail", "temp", "wind" };
-	private List<Map<String, String>> weatherDataList;
+    private ListView lvWeather;
+    private static final int[] ids = {R.id.tv_weather_city, R.id.tv_weather_detail, R.id.tv_weather_temp,
+            R.id.tv_weather_wind};
+    private static final String[] keys = {"city", "detail", "temp", "wind"};
+    private List<Map<String, String>> weatherDataList;
 
-	private SimpleAdapter adapter;
+    private SimpleAdapter adapter;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View view = inflater.inflate(R.layout.fr_xml_request, container, false);
+        View view = inflater.inflate(R.layout.fr_xml_request, container, false);
 
-		weatherDataList = new ArrayList<Map<String,String>>();
-
-
-		lvWeather = (ListView) view.findViewById(R.id.lv_weather);
-		adapter = new SimpleAdapter(getActivity(), weatherDataList, R.layout.fr_xml_request_list_item, keys, ids);
-		lvWeather.setAdapter(adapter);
-
-		// 发起请求
-		XmlRequest request = new XmlRequest(StringUtil.preUrl(Constants.DEFAULT_XML_REQUEST_URL),
-				new Listener<XmlPullParser>() {
-
-					@Override
-					public void onResponse(XmlPullParser parser) {
-						try {
-							weatherDataList.clear();
-
-							int eventType = parser.getEventType();
-							while (eventType != XmlPullParser.END_DOCUMENT) {
-								switch (eventType) {
-								case XmlPullParser.START_TAG:
-									String nodeName = parser.getName();
-									if ("city".equals(nodeName)) {
-										Map<String, String> weatherMap = new HashMap<String, String>();
-
-										weatherMap.put("city", parser.getAttributeValue(2));
-										weatherMap.put("detail", parser.getAttributeValue(5));
-										weatherMap.put("temp", parser.getAttributeValue(7)+"℃ 到 "+parser.getAttributeValue(6)+"℃");
-										weatherMap.put("wind", parser.getAttributeValue(8));
-
-										weatherDataList.add(weatherMap);
-									}
-									break;
-								}
-								eventType = parser.next();
-							}
+        weatherDataList = new ArrayList<Map<String, String>>();
 
 
-							adapter.notifyDataSetChanged();
-						} catch (XmlPullParserException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+        lvWeather = (ListView) view.findViewById(R.id.lv_weather);
+        adapter = new SimpleAdapter(getActivity(), weatherDataList, R.layout.fr_xml_request_list_item, keys, ids);
+        lvWeather.setAdapter(adapter);
 
-					}
-				}, new ErrorListener() {
+        // 发起请求
+        XmlRequest request = new XmlRequest(StringUtil.preUrl(Constants.DEFAULT_XML_REQUEST_URL),
+                new Listener<XmlPullParser>() {
 
-					@Override
-					public void onErrorResponse(VolleyError arg0) {
-						ToastUtil.showToast(getActivity(), getResources().getString(R.string.request_fail_text));
-					}
-				});
+                    @Override
+                    public void onResponse(XmlPullParser parser) {
+                        try {
+                            weatherDataList.clear();
 
-		// 请求加上Tag,用于取消请求
-		request.setTag(this);
+                            int eventType = parser.getEventType();
+                            while (eventType != XmlPullParser.END_DOCUMENT) {
+                                switch (eventType) {
+                                    case XmlPullParser.START_TAG:
+                                        String nodeName = parser.getName();
+                                        if ("city".equals(nodeName)) {
+                                            Map<String, String> weatherMap = new HashMap<String, String>();
 
-		VolleyUtil.addRequest(request);
+                                            weatherMap.put("city", parser.getAttributeValue(2));
+                                            weatherMap.put("detail", parser.getAttributeValue(5));
+                                            weatherMap.put("temp", parser.getAttributeValue(7) + "℃ 到 " + parser.getAttributeValue(6) + "℃");
+                                            weatherMap.put("wind", parser.getAttributeValue(8));
 
-		return view;
-	}
+                                            weatherDataList.add(weatherMap);
+                                        }
+                                        break;
+                                }
+                                eventType = parser.next();
+                            }
 
-	@Override
-	public void onDestroyView() {
-		VolleyUtil.cancelAll(this);
-		super.onDestroyView();
-	}
+
+                            adapter.notifyDataSetChanged();
+                        } catch (XmlPullParserException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError arg0) {
+                ToastUtil.showToast(getActivity(), getResources().getString(R.string.request_fail_text));
+            }
+        });
+
+        // 请求加上Tag,用于取消请求
+        request.setTag(this);
+
+        VolleyUtil.addRequest(request);
+
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        VolleyUtil.cancelAll(this);
+        super.onDestroyView();
+    }
 
 }

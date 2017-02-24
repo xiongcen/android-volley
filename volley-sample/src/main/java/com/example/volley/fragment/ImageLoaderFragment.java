@@ -13,22 +13,22 @@ import com.example.volley.adapter.ImageLoaderAdapter;
 import com.example.volley.util.Constants;
 
 
-public class ImageLoaderFragment extends Fragment{
-	public static final int INDEX=22;
-	
-	private String[] imageUrlArray = Constants.IMAGE_URLS;
+public class ImageLoaderFragment extends Fragment {
+    public static final int INDEX = 22;
 
-	private GridView gvCar;
+    private String[] imageUrlArray = Constants.IMAGE_URLS;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fr_image_request, container,false);
+    private GridView gvCar;
 
-		gvCar = (GridView) view.findViewById(R.id.gv_car);
-		ImageBaseAdapter adapter = new ImageLoaderAdapter(getActivity(),imageUrlArray);
-		gvCar.setAdapter(adapter);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fr_image_request, container, false);
 
-		return view;
-	}
+        gvCar = (GridView) view.findViewById(R.id.gv_car);
+        ImageBaseAdapter adapter = new ImageLoaderAdapter(getActivity(), imageUrlArray);
+        gvCar.setAdapter(adapter);
+
+        return view;
+    }
 
 }

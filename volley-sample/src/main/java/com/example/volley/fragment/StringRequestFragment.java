@@ -31,41 +31,41 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class StringRequestFragment extends Fragment {
-	public static final int INDEX = 11;
+    public static final int INDEX = 11;
 
-	private EditText etUrl;
-	private Button btnSend;
-	private TextView tvResult;
+    private EditText etUrl;
+    private Button btnSend;
+    private TextView tvResult;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View view = inflater.inflate(R.layout.fr_string_request, container,false);
+        View view = inflater.inflate(R.layout.fr_string_request, container, false);
 
-		initView(view);
+        initView(view);
 
-		return view;
-	}
+        return view;
+    }
 
-	private void initView(View view) {
-		etUrl = (EditText) view.findViewById(R.id.et_url);
-		btnSend = (Button) view.findViewById(R.id.btn_send);
-		tvResult = (TextView) view.findViewById(R.id.tv_result);
+    private void initView(View view) {
+        etUrl = (EditText) view.findViewById(R.id.et_url);
+        btnSend = (Button) view.findViewById(R.id.btn_send);
+        tvResult = (TextView) view.findViewById(R.id.tv_result);
 
-		etUrl.setText(Constants.DEFAULT_STRING_REQUEST_URL);
+        etUrl.setText(Constants.DEFAULT_STRING_REQUEST_URL);
 
-		btnSend.setOnClickListener(new OnClickListener() {
+        btnSend.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				if (StringUtil.isEmpty(etUrl.getText().toString())) {
-					ToastUtil.showToast(getActivity(), "请输入请求地址");
-					return;
-				}
-				/**
-				 * ----------volley请求----------
-				 */
-				//请求之前，先取消之前的请求（取消还没有进行完的请求）
+            @Override
+            public void onClick(View v) {
+                if (StringUtil.isEmpty(etUrl.getText().toString())) {
+                    ToastUtil.showToast(getActivity(), "请输入请求地址");
+                    return;
+                }
+                /**
+                 * ----------volley请求----------
+                 */
+                //请求之前，先取消之前的请求（取消还没有进行完的请求）
 //				VolleyUtil.cancelAll(this);
 //				tvResult.setText("");
 //
@@ -91,49 +91,47 @@ public class StringRequestFragment extends Fragment {
 //
 //				VolleyUtil.addRequest(request);
 
-				/**
-				 * ----------okhttp请求----------
-				 */
-				OkHttpClient okHttpClient = new OkHttpClient();
-				final Request request1 = new Request.Builder().url(etUrl.getText().toString()).build();
-				Call call = okHttpClient.newCall(request1);
-				call.enqueue(new Callback() {
-					@Override
-					public void onFailure(Call call, IOException e) {
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								ToastUtil.showToast(getActivity(), getResources().getString(R.string.request_fail_text));
-							}
-						});
-					}
+                /**
+                 * ----------okhttp请求----------
+                 */
+                OkHttpClient okHttpClient = new OkHttpClient();
+                final Request request1 = new Request.Builder().url(etUrl.getText().toString()).build();
+                Call call = okHttpClient.newCall(request1);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtil.showToast(getActivity(), getResources().getString(R.string.request_fail_text));
+                            }
+                        });
+                    }
 
-					@Override
-					public void onResponse(Call call, Response response) throws IOException {
-						// 非UI线程
-						Log.d("StringRequestFragment", "is Main thread:"+(Looper.myLooper() == Looper.getMainLooper()));
-						final String res = response.body().string();
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								tvResult.setText(res);
-							}
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        // 非UI线程
+                        Log.d("StringRequestFragment", "is Main thread:" + (Looper.myLooper() == Looper.getMainLooper()));
+                        final String res = response.body().string();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvResult.setText(res);
+                            }
 
-						});
-					}
-				});
+                        });
+                    }
+                });
 
-			}
-		});
-	}
+            }
+        });
+    }
 
-	@Override
-	public void onDestroyView() {
-		VolleyUtil.cancelAll(this);
-		super.onDestroyView();
-	}
-	
-	
-	
+    @Override
+    public void onDestroyView() {
+        VolleyUtil.cancelAll(this);
+        super.onDestroyView();
+    }
+
 
 }

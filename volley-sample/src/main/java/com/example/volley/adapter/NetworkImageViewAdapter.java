@@ -10,26 +10,26 @@ import com.example.volley.util.LruImageCache;
 import com.example.volley.util.StringUtil;
 import com.example.volley.util.VolleyUtil;
 
-public class NetworkImageViewAdapter extends ImageBaseAdapter{
+public class NetworkImageViewAdapter extends ImageBaseAdapter {
 
-	private ImageLoader imageLoader;
-	
-	public NetworkImageViewAdapter(Context context, String[] imageUrlArray) {
-		super(context, imageUrlArray);
-		this.imageLoader=new ImageLoader(VolleyUtil.getRequestQueue(), new LruImageCache());
-	}
+    private ImageLoader imageLoader;
 
-	@Override
-	int getItemLayout() {
-		return R.layout.fr_network_image_view_list_item;
-	}
+    public NetworkImageViewAdapter(Context context, String[] imageUrlArray) {
+        super(context, imageUrlArray);
+        this.imageLoader = new ImageLoader(VolleyUtil.getRequestQueue(), new LruImageCache());
+    }
 
-	@Override
-	void setImage(ImageView imageView, String imageUrl) {
-		NetworkImageView networkImageView=(NetworkImageView)imageView;
-		networkImageView.setDefaultImageResId(R.drawable.ic_empty);  
-		networkImageView.setErrorImageResId(R.drawable.ic_empty);  
-		networkImageView.setImageUrl(StringUtil.preUrl(imageUrl),  imageLoader);
-	}
+    @Override
+    int getItemLayout() {
+        return R.layout.fr_network_image_view_list_item;
+    }
+
+    @Override
+    void setImage(ImageView imageView, String imageUrl) {
+        NetworkImageView networkImageView = (NetworkImageView) imageView;
+        networkImageView.setDefaultImageResId(R.drawable.ic_empty);
+        networkImageView.setErrorImageResId(R.drawable.ic_empty);
+        networkImageView.setImageUrl(StringUtil.preUrl(imageUrl), imageLoader);
+    }
 
 }

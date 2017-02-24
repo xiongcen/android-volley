@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="10dp" >
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/tv_weather_city"
@@ -22,6 +22,7 @@
         android:id="@+id/tv_weather_temp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <TextView
         android:id="@+id/tv_weather_wind"
         android:layout_width="match_parent"
