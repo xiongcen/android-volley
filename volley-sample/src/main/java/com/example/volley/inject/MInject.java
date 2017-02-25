@@ -93,6 +93,14 @@ public class MInject {
 
     private static final String METHOD_NAME_SETONCLICKLISTENER = "setOnClickListener";
 
+    /**
+     * 设置的点击事件是用setiOnClickListener();
+     * 然后View.OnClickListener是一个接口，不能用反射来获得他的实例，那么怎么办呢？
+     * 这里可以巧妙地用动态代理来完成。
+     *
+     * @param target
+     * @param rootView
+     */
     public static void injectOnClick(final Object target, View rootView) {
         Method[] declaredMethods = target.getClass().getDeclaredMethods();
         for (int i = 0; i < declaredMethods.length; i++) {
