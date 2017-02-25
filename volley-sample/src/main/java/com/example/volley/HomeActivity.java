@@ -3,10 +3,12 @@ package com.example.volley;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.example.volley.cachetest.CacheTestActivity;
 import com.example.volley.fragment.ImageLoaderFragment;
@@ -16,9 +18,20 @@ import com.example.volley.fragment.NetworkImageViewFragment;
 import com.example.volley.fragment.PostRequestFragment;
 import com.example.volley.fragment.StringRequestFragment;
 import com.example.volley.fragment.XmlRequestFragment;
+import com.example.volley.inject.Inject;
+import com.example.volley.inject.MInject;
+import com.example.volley.inject.OnClick;
 import com.example.volley.util.Constants;
+import com.example.volley.util.ToastUtil;
 
 public class HomeActivity extends Activity implements OnClickListener {
+
+    private static final String TAG = "HomeActivity";
+
+    @Inject(value = R.id.btn_string_request)
+    private Button stringBtn;
+
+    private int clickCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +39,24 @@ public class HomeActivity extends Activity implements OnClickListener {
         setContentView(R.layout.app_main);
         initView();
 
+        int i = 1;
+        ClassLoader classLoader = getClassLoader();
+        if (classLoader != null) {
+            Log.i(TAG, "[onCreate] classLoader " + i + " : " + classLoader.toString());
+            while (classLoader.getParent() != null) {
+                i++;
+                classLoader = classLoader.getParent();
+                Log.i(TAG, "[onCreate] classLoader " + i + " : " + classLoader.toString());
+            }
+        }
+
+        MInject.inject(this);
+    }
+
+    @OnClick(value = R.id.btn_string_request, shakeTime = 5000)
+    public void click(View view) {
+        clickCount++;
+        ToastUtil.showToast(this, "测试"+clickCount);
     }
 
     private void initView() {
