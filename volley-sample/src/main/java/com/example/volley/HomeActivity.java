@@ -24,6 +24,9 @@ import com.example.volley.inject.OnClick;
 import com.example.volley.util.Constants;
 import com.example.volley.util.ToastUtil;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class HomeActivity extends Activity implements OnClickListener {
 
     private static final String TAG = "HomeActivity";
@@ -31,13 +34,16 @@ public class HomeActivity extends Activity implements OnClickListener {
     @Inject(value = R.id.btn_string_request)
     private Button stringBtn;
 
+    @BindView(R.id.btn_json_request)
+    Button jsonBtn;
+
     private int clickCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_main);
-        initView();
+
 
         int i = 1;
         ClassLoader classLoader = getClassLoader();
@@ -51,6 +57,10 @@ public class HomeActivity extends Activity implements OnClickListener {
         }
 
         MInject.inject(this);
+
+        ButterKnife.bind(this);
+
+        initView();
     }
 
     @OnClick(value = R.id.btn_string_request, shakeTime = 5000)
@@ -64,7 +74,7 @@ public class HomeActivity extends Activity implements OnClickListener {
         findViewById(R.id.btn_string_request).setOnClickListener(this);
 
         // Json请求
-        findViewById(R.id.btn_json_request).setOnClickListener(this);
+        jsonBtn.setOnClickListener(this);
 
         // Image请求
         findViewById(R.id.btn_image_request).setOnClickListener(this);
