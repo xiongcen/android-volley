@@ -1,6 +1,7 @@
 package com.example.volley.cachetest;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.example.volley.util.VolleyUtil;
@@ -11,7 +12,7 @@ import java.io.File;
  * Created by xiongcen on 16/11/25.
  */
 
-public class BaseApplication extends Application {
+public class BaseApplication extends MultiDexApplication {
 
     @Override
     public void onCreate() {

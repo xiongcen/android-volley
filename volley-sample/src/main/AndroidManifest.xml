@@ -29,6 +29,7 @@
         <activity android:name=".RequestActivity"></activity>
         <activity android:name=".cachetest.CacheTestActivity"></activity>
         <activity android:name=".SocketActivity"></activity>
+        <activity android:name=".listview.ListViewTestActivity"></activity>
     </application>
 
 </manifest>

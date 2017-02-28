@@ -21,6 +21,7 @@ import com.example.volley.fragment.XmlRequestFragment;
 import com.example.volley.inject.Inject;
 import com.example.volley.inject.MInject;
 import com.example.volley.inject.OnClick;
+import com.example.volley.listview.ListViewTestActivity;
 import com.example.volley.util.Constants;
 import com.example.volley.util.ToastUtil;
 
@@ -61,12 +62,13 @@ public class HomeActivity extends Activity implements OnClickListener {
         ButterKnife.bind(this);
 
         initView();
+
     }
 
     @OnClick(value = R.id.btn_string_request, shakeTime = 5000)
     public void click(View view) {
         clickCount++;
-        ToastUtil.showToast(this, "测试"+clickCount);
+        ToastUtil.showToast(this, "测试" + clickCount);
     }
 
     private void initView() {
@@ -95,6 +97,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 
         findViewById(R.id.btn_socket_test).setOnClickListener(this);
 
+        findViewById(R.id.btn_listview_test).setOnClickListener(this);
     }
 
     @Override
@@ -141,11 +144,14 @@ public class HomeActivity extends Activity implements OnClickListener {
                 intent.putExtra(Constants.Extra.FRAGMENT_INDEX, PostRequestFragment.INDEX);
                 break;
             case R.id.btn_socket_test:
-                startActivity(new Intent(HomeActivity.this, SocketActivity.class));
+                intent = new Intent(HomeActivity.this, SocketActivity.class);
                 break;
             case R.id.btn_cache_test:
-                startActivity(new Intent(HomeActivity.this, CacheTestActivity.class));
-                return;
+                intent = new Intent(HomeActivity.this, CacheTestActivity.class);
+                break;
+            case R.id.btn_listview_test:
+                intent = new Intent(HomeActivity.this, ListViewTestActivity.class);
+                break;
             default:
                 break;
         }
