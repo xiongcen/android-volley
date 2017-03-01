@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.example.volley.aspectj.AspectJTestActivity;
 import com.example.volley.cachetest.CacheTestActivity;
 import com.example.volley.fragment.ImageLoaderFragment;
 import com.example.volley.fragment.ImageRequestFragment;
@@ -98,6 +99,8 @@ public class HomeActivity extends Activity implements OnClickListener {
         findViewById(R.id.btn_socket_test).setOnClickListener(this);
 
         findViewById(R.id.btn_listview_test).setOnClickListener(this);
+
+        findViewById(R.id.btn_aspect_test).setOnClickListener(this);
     }
 
     @Override
@@ -120,7 +123,29 @@ public class HomeActivity extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(HomeActivity.this, RequestActivity.class);
+        Intent intent = null;
+        switch (v.getId()) {
+            case R.id.btn_socket_test:
+                intent = new Intent(HomeActivity.this, SocketActivity.class);
+                startActivity(intent);
+                return;
+            case R.id.btn_cache_test:
+                intent = new Intent(HomeActivity.this, CacheTestActivity.class);
+                startActivity(intent);
+                return;
+            case R.id.btn_listview_test:
+                intent = new Intent(HomeActivity.this, ListViewTestActivity.class);
+                startActivity(intent);
+                return;
+            case R.id.btn_aspect_test:
+                intent = new Intent(HomeActivity.this, AspectJTestActivity.class);
+                startActivity(intent);
+                return;
+            default:
+                break;
+        }
+
+        intent = new Intent(HomeActivity.this, RequestActivity.class);
         switch (v.getId()) {
             case R.id.btn_string_request:
                 intent.putExtra(Constants.Extra.FRAGMENT_INDEX, StringRequestFragment.INDEX);
@@ -143,19 +168,9 @@ public class HomeActivity extends Activity implements OnClickListener {
             case R.id.btn_post_request:
                 intent.putExtra(Constants.Extra.FRAGMENT_INDEX, PostRequestFragment.INDEX);
                 break;
-            case R.id.btn_socket_test:
-                intent = new Intent(HomeActivity.this, SocketActivity.class);
-                break;
-            case R.id.btn_cache_test:
-                intent = new Intent(HomeActivity.this, CacheTestActivity.class);
-                break;
-            case R.id.btn_listview_test:
-                intent = new Intent(HomeActivity.this, ListViewTestActivity.class);
-                break;
             default:
                 break;
         }
-
         startActivity(intent);
 
     }

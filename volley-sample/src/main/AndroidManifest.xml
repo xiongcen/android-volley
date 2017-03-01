@@ -30,6 +30,7 @@
         <activity android:name=".cachetest.CacheTestActivity"></activity>
         <activity android:name=".SocketActivity"></activity>
         <activity android:name=".listview.ListViewTestActivity"></activity>
+        <activity android:name=".aspectj.AspectJTestActivity"></activity>
     </application>
 
 </manifest>

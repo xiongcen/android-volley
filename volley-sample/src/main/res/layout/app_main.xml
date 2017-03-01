@@ -93,10 +93,16 @@
             android:text="@string/socket_test" />
 
         <Button
-            android:id="@+id/btn_listview_test"
+        android:id="@+id/btn_listview_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/listview_test" />
+
+        <Button
+            android:id="@+id/btn_aspect_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/listview_test" />
+            android:text="@string/aspect_test" />
     </LinearLayout>
 
 </ScrollView>
